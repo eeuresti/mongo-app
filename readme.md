@@ -10,8 +10,6 @@
 
 ##First things first:  Install Party!
 
-####Caution: At this point, I urge you to simply read and absorb the information provided to see the basic patterns of creating and implementing databases. You do not need to create a new node project to successfully learn from tonight's readings. We'll go over this at a comfortable pace tomorrow :)
-
 We need to use brew to install our new **MongoDB** database system!
 
 From the console:
@@ -33,7 +31,7 @@ Let's ensure that the folder permissions allow us to read and write to our newly
 From the console:
 
 ```
-sudo chown -R $USER	/data/db
+sudo chown -R $USER /data/db
 ```
 
 
@@ -46,16 +44,16 @@ sudo chown -R $USER	/data/db
 
 - **Schema**: Similar to an object constructor, a Schema is a diagram or blueprint for what every object in the noSQL database will contain.  Here's an example of a simple Address Book noSQL database schema:  
 
-	```javascript
-		var AddressBookSchema = new Schema({
-		    firstName: String,
-		    lastName: String,
-		    address: String
-		    phoneNumber: Number,
-		    email: String
-		    professionalContact: Boolean
-		});
-	```
+    ```javascript
+        var AddressBookSchema = new Schema({
+            firstName: String,
+            lastName: String,
+            address: String
+            phoneNumber: Number,
+            email: String
+            professionalContact: Boolean
+        });
+    ```
 *With the above Schema, we can expect all of our Address Book entries would have a first name, last name, address, and email address in the form of Strings.  We can count on the phoneNumber to always be accepted, stored, and returned as a number.  Lastly, the boolean value of Professional Contact will always be a `true` or `false`*
 
 - **Model**: A model is a Schema that has been 'activated' with real data and is performing actions such as reading, saving, updating, etc.
@@ -80,8 +78,6 @@ A great analogy from a fellow StackOverflow:
 
 
 ##Getting started with our own database!
-####Caution: At this point, I urge you to simply read and absorb the information provided to see the basic patterns of creating and implementing databases.  You do not need to create a new node project to successfully learn from tonight's readings.  We'll go over this at a comfortable pace tomorrow :)
-
 Head over to our app folder and we will install Mongoose via npm.   Mongoose is a Object-relational mapping middleware that enables us to easily model objects and interact with MongoDB.  
 
 From the console:  
@@ -131,7 +127,7 @@ var Book = mongoose.model('Book', BookSchema);
 
 [Here is a link to all of the different datatypes we can use in a Schema](http://mongoosejs.com/docs/schematypes.html)
 
-###Building and Creating Documents
+###Create -- Building and Creating Documents
 
 A MongoDB *Document* is the entry of data stored in MongoDB; Documents are analogous to JSON objects but exist in the database in a more type-rich format known as BSON (binary-JSON).
 
@@ -163,14 +159,42 @@ Book.create({title: "The Giver"}, function (err, book) {
 });
 ```
 
-###Removing
+
+###Read
+
+We can find books by author:
+
+```javascript
+  Book.find({author: "Lewis Carroll"}, function (err, books) {
+    console.log(books);
+  });
+```
+
+We can find ALL the books as follows (note that a pair of empty curly braces signals that we want EVERYTHING returned / no filtering):
+
+```javascript
+Book.find({}, function(err, books){
+  console.log(books);
+});
+```
+
+Try out some of the other find methods.
+
+```javascript
+.findOne();
+.findById();
+```
+Reference the docs for more info on what you can do with Mongoose Models
+
+
+###Destroy
 Removing a Document is as simple as Building and Creating.
 
 Using the remove method:
 
 ```javascript
 Book.remove({ title: "The Giver" }, function(err, book) {
-    if (!err) return console.log(err);
+    if (err) { return console.log(err) };
     
     console.log("removal of " + book.title + " successful.")
 });
@@ -180,111 +204,12 @@ Other removal methods include:
 ```javascript
 findByIdAndRemove();
 findOneAndRemove();
-	
+    
 ```
-
-
-###Reading
-
-Let's find a book by it's author.
-
-```javascript
-  Book.find({author: "Lewis Carroll"}, function (err, books) {
-    console.log(books);
-  });
-```
-
-Try out some of the other find methods.
-
-```javascript
-findOne();
-findById();
-```
-Reference the docs for more info on what you can do with Mongoose Models
-
-
-###Storing a Query Object
-
-We can console.log all books as follows:
-
-```javascript
-Book.find({}, function(err, books){
-  console.log(books);
-});
-```
-
-Note that a pair of empty curly braces signals that we want EVERYTHING returned. We can avoid passing in a callback to our query and store it for later...
-
-
-```javascript
-var query = Book.find({});
-query.exec(function(err, books){
-  console.log(books);
-});
-```
-
-
-
-## Organizing the Data
-
-### Document Structure
-
-**Embedded Data**
-
-![](http://docs.mongodb.org/manual/_images/data-model-denormalized.png)
-
-
-**Data References**
-
-![](http://docs.mongodb.org/manual/_images/data-model-normalized.png)
-
-
-## Embedded Data
-
-* Let's make a new `Author` schema with the attributes
-	* `name` that will be a String
-	* `books` that will contain an array of Books the Author has written 
-
-* Define the Author schema
-
-```javascript
-var AuthorSchema = new Schema({
-  name: String,
-  books: [BookSchema]
-});
-```
-* Turn the schema into a model
-
-```
-var Author = mongoose.model('Author', AuthorSchema);
-```
-
-* Let's make an author
-```javascript
-var homer = new Author();
-```
-
-* Create some books
-
-```javascript
-var theIliad = new Book({title: 'The Iliad'});
-var theOdyssey = new Book({title: 'The Odyssey'});
-```
-
-* Associate the books with that Author and check the result
-
-```javascript
-homer.books.push(theIliad, theOdyssey);
-homer.books;
-```
-
-* Note: Since the books are stored *inside* the associated Author, we can remove the Book's property `author`
-
-
 
 ##Further suggested readings:
 [Mongoose official site](http://mongoosejs.com/index.html)
 [MongoDB official site](https://www.mongodb.org/)
 [Friendly Australian explains RDBMS vs noSQL](https://www.youtube.com/watch?v=XPqrY7YEs0A)
-[Google I/O: Battle of the Backends: SQL vs noSQL](https://www.youtube.com/watch?v=rRoy6I4gKWU)	
-	
+[Google I/O: Battle of the Backends: SQL vs noSQL](https://www.youtube.com/watch?v=rRoy6I4gKWU) 
+    
